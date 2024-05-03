@@ -1,0 +1,42 @@
+version: '3.7'
+services:
+  web:
+    build: .
+    environment:
+      #ASPNETCORE_URLS : http://+      
+      JWTAuthorization__issuer: "SocialNetworkMega"
+      JWTAuthorization__audience: "SocialNetwork"
+      JWTAuthorization__encryptingKey: "sda443SDsffSD53SD45dfdj9jj3jhfh798783HKHHKHkjhfkdbjlfjfojfdsfjJLJIJLJljjiujijJIJJyUUUNVLJLHHjhkjhfkh"
+      JWTAuthorization__signingKey: "PvkdiopjljFioisdjmfopfdlsifjldsfjlksdf545"
+      ConnectionStrings__dbconnection: "Host=database;Port=5432;Database=socialnetworkdb;Username=postgres;Password=pgpwd4habr"
+    ports:    
+      - "8091:8080"      
+    depends_on:      
+      database:
+        condition: service_healthy
+
+      
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: "socialnetworkdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "pgpwd4habr"
+    ports:
+      - "5500:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+        
+  
+
+        
+
+        
+
+ 
+      

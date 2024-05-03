@@ -1,0 +1,116 @@
+{
+	"info": {
+		"_postman_id": "7566ea98-0370-4b00-84f7-aefc200de369",
+		"name": "SocialNetwork",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34601951"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8091/user/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n  \"first_name\": \"string\",\r\n  \"second_name\": \"string\",\r\n  \"birthdate\": \"string\",\r\n  \"city\": \"Moscow333\",\r\n  \"biography\": \"string\",  \r\n  \"password\": \"string\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8091/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:8091/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"97e201c4-07ef-41b7-bed3-643777b0abe3\",\r\n  \"password\": \"string\"\r\n}"
+				},
+				"url": {
+					"raw": "https://localhost:8091/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:8091/user/get/22180af2-2466-40e1-99cb-25d50fd4aeb8",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwidHlwIjoiSldUIiwiY3R5IjoiSldUIn0..NMagXUnkkKNxDtfCUrdvOw.XSDSgSKFgN21i_inPGXdMoGLZxE29bmS9ILr3YMugw0Ux2elRmVqXlLAp4hSFH9XC_4Gii43D5z---0bGxBqZeJ-v_gYYQw6kx-8YtpzxVPSEcOVesQLLSU9hHZnP0-1NEE7J4XiyFDIp-xNpEm7i6UgUHCx2-7n2Ca6XdjRNbQsNNfnmo9eXddPMhHoMbN3a7wY3vpSP7-gkA-kwQyw3Ig9KuT0-jUu4WAzC7EqPP4XGbxkAdNm7DATvSXCI6kJ_Sqc609xgWtzNdQwY_H8O-Gt3bPhbslV4G5AUqHDZNts8ZvY25zhP6akVfM35yXlk45G2B-x75DlWVsLCcR3HDZx0Sb4hdT0XQ6tq_dbauJN5JTk-nRGHFkaFNJhwMATYsv0WajV24tdxFmONVm2kRruTZGm7NXtkJjECcHiiVg3bfIN0h_pDHlBqQ1lDnR5X71-GBvsUbPpDtdAZzPKnA.MdNkkL_LkbXV-VD2Q-XsO59tiPqr08n3yNy8pZ8-YAs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "bearer eyJhbGciOi",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://localhost:8091/user/get/22180af2-2466-40e1-99cb-25d50fd4aeb8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"user",
+						"get",
+						"22180af2-2466-40e1-99cb-25d50fd4aeb8"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

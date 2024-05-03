@@ -1,1 +1,5 @@
-# otus_socialnetwork
+# Проект Социальная сеть. 
+Для  запуска необходимо в каталоге запустить **docker-compose up -d**
+
+docker-compose сам сделает билд приложения и запустит БД Postgres
+Коллекция для Postman находится в каталоге Postman
