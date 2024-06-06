@@ -44,26 +44,26 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-var proxySection = builder.Configuration.GetSection("JWTAuthorization");
-var issuer = proxySection.GetValue<string>("issuer") ?? throw new Exception("no issuer");
-var audience = proxySection.GetValue<string>("audience") ?? throw new Exception("no audience");
-var encryptingKey = proxySection.GetValue<string>("encryptingKey") ?? throw new Exception("no encryptingKey");
-var signingKey = proxySection.GetValue<string>("signingKey") ?? throw new Exception("no signingKey");
+//var proxySection = builder.Configuration.GetSection("JWTAuthorization");
+//var issuer = proxySection.GetValue<string>("issuer") ?? "issuer";
+//var audience = proxySection.GetValue<string>("audience") ?? throw new Exception("no audience");
+//var encryptingKey = proxySection.GetValue<string>("encryptingKey") ?? throw new Exception("no encryptingKey");
+//var signingKey = proxySection.GetValue<string>("signingKey") ?? throw new Exception("no signingKey");
 
-builder.Services.AddJWTAuthorization(builder.Environment, issuer, audience, encryptingKey, signingKey);
+//builder.Services.AddJWTAuthorization(builder.Environment, issuer, audience, encryptingKey, signingKey);
 
-builder.Services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
+//builder.Services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
 
-builder.Services.AddDbContext<ApplicationContext>();
-builder.Services.AddScoped<DBService>();
+//builder.Services.AddDbContext<ApplicationContext>();
+//builder.Services.AddScoped<DBService>();
 
-builder.Services.AddScoped<LoginService>();
-builder.Services.AddScoped<UserService>();
+//builder.Services.AddScoped<LoginService>();
+//builder.Services.AddScoped<UserService>();
 
-builder.Services.AddScoped<TokenJWTService>(x =>
-{
-    return new TokenJWTService(issuer, audience, encryptingKey, signingKey);
-});
+//builder.Services.AddScoped<TokenJWTService>(x =>
+//{
+//    return new TokenJWTService(issuer, audience, encryptingKey, signingKey);
+//});
 
 
 
