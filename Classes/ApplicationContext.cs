@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SocialNetwork.Models;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 
 namespace SocialNetwork.Classes
-{   
+{
     public class ApplicationContext : DbContext
     {
         private readonly IConfiguration configuration;
@@ -13,19 +16,24 @@ namespace SocialNetwork.Classes
 
         public ApplicationContext(IConfiguration configuration)
         {
-            this.configuration = configuration;            
+            this.configuration = configuration;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {            
-            string connection = configuration.GetConnectionString("dbconnection");            
+        {
+            string connection = configuration.GetConnectionString("dbconnection");
             optionsBuilder.UseNpgsql(connection);
-            
+
             //optionsBuilder.LogTo(Console.WriteLine);           
         }
 
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+           
+        
+          
+
         }
 
     }

@@ -61,7 +61,7 @@ builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<TokenJWTService>(x =>
-{   
+{
     return new TokenJWTService(issuer, audience, encryptingKey, signingKey);
 });
 
@@ -74,7 +74,9 @@ using (var scope = app.Services.CreateScope())
     using (var dbContext = scope.ServiceProvider.GetService<ApplicationContext>())
     {
         //dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
+        //dbContext.Database.EnsureCreated();
+
+        //DataSeeder.Seed(dbContext);
     }
 }
 

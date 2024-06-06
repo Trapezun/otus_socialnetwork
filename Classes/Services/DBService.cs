@@ -1,4 +1,6 @@
 ﻿using Npgsql;
+using SocialNetwork.Models;
+using System.Data;
 
 namespace SocialNetwork.Classes.Services
 {
@@ -11,12 +13,11 @@ namespace SocialNetwork.Classes.Services
             this.configuration = configuration;
         }
 
-        public async Task ExecuteSelect(string sqlCommand, Action<NpgsqlDataReader> action, List<NpgsqlParameter>? parameters = null)
+        public async void ExecuteSelect(string sqlCommand, Action<NpgsqlDataReader> action, List<NpgsqlParameter>? parameters = null)
         {
-
-            var connectionString = getConnectionString();
-            await using var dataSource = NpgsqlDataSource.Create(connectionString);
-            await using var command = dataSource.CreateCommand(sqlCommand);
+            var connectionString = getConnectionString();          
+            using var dataSource = NpgsqlDataSource.Create(connectionString);
+            using var command = dataSource.CreateCommand(sqlCommand);
             if (parameters != null)
             {
                 parameters.ForEach(x =>
@@ -24,16 +25,18 @@ namespace SocialNetwork.Classes.Services
                     command.Parameters.Add(x);
                 });
             }
-            await using var reader = await command.ExecuteReaderAsync();
-            action(reader);
+            using var reader = command.ExecuteReader();
+            {
+                action(reader);
+            }
         }
 
         public async Task Execute(string sqlCommand, List<NpgsqlParameter> parameters)
         {
             var connectionString = getConnectionString();
-            await using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
-            await using var cmd = new NpgsqlCommand(sqlCommand, conn);                 
+            using var cmd = new NpgsqlCommand(sqlCommand, conn);                 
             if (parameters != null)
             {
                 parameters.ForEach(x =>

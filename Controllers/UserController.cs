@@ -19,11 +19,23 @@ namespace SocialNetwork.Controllers
 
         [HttpGet]
         [Route("/user/get/{id}")]
-        public async Task<UserModel> UserGet(string id)
+        [AllowAnonymous]
+        public UserModel UserGet(string id)
         {
-            var retval = await userService.GetByID(id);
+            var retval = userService.GetByID(id);
             return retval;
         }
+
+
+        [HttpGet]
+        [Route("/user/search/")]
+        [AllowAnonymous]
+        public List<UserModel> UserSearch([FromQuery]string firstName, [FromQuery] string lastName)
+        {
+            var retval = userService.UserSearch(firstName, lastName);
+            return retval;
+        }
+
 
 
         [HttpPost]
@@ -32,20 +44,7 @@ namespace SocialNetwork.Controllers
         public async Task<UserModel> Register([FromBody] UserModelRegisterRequestModel model)
         {
             var retval = await userService.Register(model);
-            return retval;
-
-            //try
-            //{
-
-            //    var retval = await userService.Register(model);
-            //    return retval;
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex.Message);
-            //    //logger.LogError(ex.Message);
-            //    return null;
-            //}
+            return retval;        
         }
     }
 }

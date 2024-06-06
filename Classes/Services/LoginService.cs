@@ -17,7 +17,7 @@ namespace SocialNetwork.Classes.Services
             this.tokenJWTService = tokenJWTService;
         }
 
-        public async Task<LoginResponseModel?> ValidateUser(LoginRequestModel request)
+        public LoginResponseModel ValidateUser(LoginRequestModel request)
         {            
             List<NpgsqlParameter> _params = new List<NpgsqlParameter> {
                 new NpgsqlParameter("Id", request.Id),                
@@ -25,10 +25,10 @@ namespace SocialNetwork.Classes.Services
 
             string? token = null;
 
-            await this.dbService.ExecuteSelect("""SELECT "id", "passwordhash", "paswordsalt" FROM public.Users WHERE id=(@id)""",
-                async (reader) =>
+            this.dbService.ExecuteSelect("""SELECT "id", "passwordhash", "paswordsalt" FROM public.Users WHERE id=(@id)""",
+                (reader) =>
                 {
-                    while (await reader.ReadAsync() && token==null)
+                    while (reader.Read() && token==null)
                     {
                         var id = reader.GetString("id");                        
                         var passwordhash = (byte[])reader["passwordhash"];                         

@@ -20,24 +20,38 @@ namespace SocialNetwork.Controllers
         [HttpPost]
         [Route("/login")]
         [AllowAnonymous]
-        public async Task<LoginResponseModel> Login([FromBody] LoginRequestModel model)
+        public LoginResponseModel Login([FromBody] LoginRequestModel model)
         {
-            var rez = await loginService.ValidateUser(model);
-            if(rez == null)
+            var rez = loginService.ValidateUser(model);
+            if (rez == null)
             {
                 return null;
             }
-            return rez;            
+            return rez;
 
         }
 
+    }
 
+    public class TestController : ControllerBase
+    {
 
+        [HttpGet]
+        [Route("/test")]
+        [AllowAnonymous]
+        public async Task<string> Test()
+        {
+            return System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName()).AddressList[0].ToString();
+        }
 
+        [HttpGet]
+        [Route("/health")]
+        [AllowAnonymous]
+        public async Task<string> Health()
+        {
+            return "";
 
-
-
-
+        }
 
     }
 }
