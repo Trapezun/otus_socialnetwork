@@ -49,7 +49,7 @@ namespace SocialNetwork.Controllers
         [AllowAnonymous]
         public async Task<string> Health()
         {
-            return "";
+            return "\"status\": \"OK\"";
 
         }
 
