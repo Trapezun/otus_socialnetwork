@@ -30,6 +30,14 @@ namespace SocialNetwork.Models
 
         [Column("paswordsalt")]
         public byte[] PaswordSalt { get; set; }
+
+        public List<PostDBModel> Posts { get; set; } = new();
+
+        // Навигационные свойства
+        public List<FriendshipDBModel> Friendships { get; set; } = new();
+        public List<FriendshipDBModel> FriendsOf { get; set; } = new();
+
+
     }
 
     public class UserModel

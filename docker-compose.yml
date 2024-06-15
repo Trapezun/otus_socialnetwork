@@ -9,29 +9,36 @@ services:
       JWTAuthorization__encryptingKey: "sda443SDsffSD53SD45dfdj9jj3jhfh798783HKHHKHkjhfkdbjlfjfojfdsfjJLJIJLJljjiujijJIJJyUUUNVLJLHHjhkjhfkh"
       JWTAuthorization__signingKey: "PvkdiopjljFioisdjmfopfdlsifjldsfjlksdf545"
       ConnectionStrings__dbconnection: "Host=databasemaster;Port=5432;Database=socialnetworkdb;Username=postgres;Password=pgpwd4habr"
+      ConnectionStrings__redisconnection: "redis:6379,allowAdmin=true,abortConnect=false"
     ports:    
-      - "8000:8080"      
-  #   depends_on:      
-  #     databasemaster:
-  #       condition: service_healthy
+      - "9000:8080"      
+    depends_on:           
+      databasemaster:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
-      
-  # databasemaster:
-  #   image: mirror.gcr.io/postgres
-  #   environment:
-  #     POSTGRES_DB: "socialnetworkdb"
-  #     POSTGRES_USER: "postgres"
-  #     POSTGRES_PASSWORD: "pgpwd4habr"
-  #     PGDATA: "/var/lib/postgresql/data/pgdata"
-  #   volumes:    
-  #     - d:\otusLessons\dbdatamaster\:/var/lib/postgresql/data
-  #   ports:
-  #     - "5500:5432"
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 10
+  redis:
+    # ports:
+    #   - 6379:6379  
+    image: "redis:6.0.4"    
+          
+  databasemaster:
+    image: mirror.gcr.io/postgres
+    environment:
+      POSTGRES_DB: "socialnetworkdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "pgpwd4habr"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    # volumes:    
+    #   - d:\otusLessons\dbdatamaster\:/var/lib/postgresql/data
+    ports:
+      - "5500:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # databaseslave:
   #   image: mirror.gcr.io/postgres
