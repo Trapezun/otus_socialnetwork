@@ -13,7 +13,7 @@ namespace SocialNetwork.Classes.Redis
         public RedisValue? GetResource(string key)
         {                   
             var redisClient = _redisWrapper;
-            var value = redisClient.GetString(0, key);
+            var value = redisClient.GetString(1, key);
             if (value == null)
             {
                 return null;
@@ -29,7 +29,13 @@ namespace SocialNetwork.Classes.Redis
         public void SetResource(string key, string value, TimeSpan? expiry = null)
         {
             var redisClient = _redisWrapper;
-            redisClient.SetString(0, key, value, expiry);
+            redisClient.SetString(1, key, value, expiry);
+        }
+
+        public void SetExpire(string key, TimeSpan? expiry = null)
+        {
+            var redisClient = _redisWrapper;
+            redisClient.SetExpire(1, key,expiry);
         }
     }
 }

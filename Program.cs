@@ -7,6 +7,7 @@ using SocialNetwork.Classes;
 using SocialNetwork.Classes.Redis;
 using SocialNetwork.Classes.Services;
 using SocialNetwork.Extensions;
+using StackExchange.Redis;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +66,12 @@ builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<FriendsService>();
 
 
+
+
+builder.Services.AddHostedService<CacheWorker>();
+builder.Services.AddSingleton<CacheService>();
+
+
 builder.Services.AddSingleton(x =>
 {
     var configuration = x.GetRequiredService<IConfiguration>();
@@ -79,7 +86,7 @@ builder.Services.AddSingleton(x =>
     return retval;
 });
 
-builder.Services.AddTransient(x =>
+builder.Services.AddSingleton(x =>
 {
     var wrapper = x.GetRequiredService<RedisWrapper>();
     return new RedisService(wrapper);    
@@ -108,9 +115,7 @@ using (var scope = app.Services.CreateScope())
         DataSeeder.SeedUsers(dbContext);
         DataSeeder.SeedFriends(dbContext);
         DataSeeder.SeedPosts(dbContext);
-
-        var posts = scope.ServiceProvider.GetService<PostService>();
-        posts.SavePostsToCache();
+        
     }
 
     

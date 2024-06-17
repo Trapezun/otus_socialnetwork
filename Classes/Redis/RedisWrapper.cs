@@ -87,7 +87,7 @@ namespace SocialNetwork.Classes.Redis
         {
             InitMultiplexer();
             var db = GetDatabase(redisDbNumber);
-            db.StringSet(key, value, expiry);
+            db.StringSet(key, value, expiry);            
         }
 
         public void DeleteKey(int redisDbNumber, string key)
@@ -96,6 +96,13 @@ namespace SocialNetwork.Classes.Redis
             var db = GetDatabase(redisDbNumber);
             db.KeyDelete(key);
         }
+
+        public void SetExpire(int redisDbNumber, string key, TimeSpan? expiry = null) {
+            InitMultiplexer();
+            var db = GetDatabase(redisDbNumber);
+            db.KeyExpire(key, expiry);
+        }
+
 
         public IServer GetServer()
         {

@@ -54,6 +54,26 @@ namespace SocialNetwork.Controllers
         }
 
     }
+
+
+    public class CacheController : ControllerBase
+    {
+        private readonly PostService postService;
+
+        public CacheController(PostService postService)
+        {
+            this.postService = postService;
+        }
+
+        [HttpGet]
+        [Route("/cache/reload")]
+        [AllowAnonymous]
+        public async Task Reload()
+        {            
+            postService.SaveAllPostsToCache();
+        }
+
+    }
 }
 
 
