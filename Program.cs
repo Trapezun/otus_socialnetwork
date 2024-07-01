@@ -1,6 +1,7 @@
 using DalSoft.Hosting.BackgroundQueue.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.Classes;
@@ -47,17 +48,38 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-var proxySection = builder.Configuration.GetSection("JWTAuthorization");
-var issuer = proxySection.GetValue<string>("issuer") ?? "issuer";
-var audience = proxySection.GetValue<string>("audience") ?? throw new Exception("no audience");
-var encryptingKey = proxySection.GetValue<string>("encryptingKey") ?? throw new Exception("no encryptingKey");
-var signingKey = proxySection.GetValue<string>("signingKey") ?? throw new Exception("no signingKey");
+builder.Services.AddDbContext<ApplicationContext>();
 
-builder.Services.AddJWTAuthorization(builder.Environment, issuer, audience, encryptingKey, signingKey);
+
+// Check if the "migrate" argument is passed
+if (args.Length > 0 && args[0].ToLower() == "migrate")
+{
+    Console.WriteLine("Starting migration...");
+
+    var appMigrate = builder.Build();
+
+    using (var scope = appMigrate.Services.CreateScope())
+    {
+        using (var dbContext = scope.ServiceProvider.GetService<ApplicationContext>())
+        {
+            //dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+
+          
+
+            DataSeeder.SeedUsers(dbContext);
+            DataSeeder.SeedFriends(dbContext);
+            DataSeeder.SeedPosts(dbContext);
+
+
+            Console.WriteLine("Migration completed.");
+            return; // Exit after migration          
+        }
+    }        
+}
 
 builder.Services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
 
-builder.Services.AddDbContext<ApplicationContext>();
 builder.Services.AddScoped<DBService>();
 
 builder.Services.AddScoped<LoginService>();
@@ -92,7 +114,13 @@ builder.Services.AddSingleton(x =>
     return new RedisService(wrapper);    
 });
 
+var proxySection = builder.Configuration.GetSection("JWTAuthorization");
+var issuer = proxySection.GetValue<string>("issuer") ?? "issuer";
+var audience = proxySection.GetValue<string>("audience") ?? throw new Exception("no audience");
+var encryptingKey = proxySection.GetValue<string>("encryptingKey") ?? throw new Exception("no encryptingKey");
+var signingKey = proxySection.GetValue<string>("signingKey") ?? throw new Exception("no signingKey");
 
+builder.Services.AddJWTAuthorization(builder.Environment, issuer, audience, encryptingKey, signingKey);
 
 builder.Services.AddScoped<TokenJWTService>(x =>
 {
@@ -102,25 +130,24 @@ builder.Services.AddScoped<TokenJWTService>(x =>
 
 builder.Services.AddBackgroundQueue(onException: exception => { });
 
-
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    using (var dbContext = scope.ServiceProvider.GetService<ApplicationContext>())
-    {
-        //dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
+//using (var scope = app.Services.CreateScope())
+//{
+//    using (var dbContext = scope.ServiceProvider.GetService<ApplicationContext>())
+//    {
+//        //dbContext.Database.EnsureDeleted();
+//        dbContext.Database.EnsureCreated();
 
-        DataSeeder.SeedUsers(dbContext);
-        DataSeeder.SeedFriends(dbContext);
-        DataSeeder.SeedPosts(dbContext);
-        
-    }
+//        DataSeeder.SeedUsers(dbContext);
+//        DataSeeder.SeedFriends(dbContext);
+//        DataSeeder.SeedPosts(dbContext);
+//    }
+//}
 
-    
 
-}
+
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
