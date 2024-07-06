@@ -10,6 +10,11 @@ services:
       JWTAuthorization__signingKey: "PvkdiopjljFioisdjmfopfdlsifjldsfjlksdf545"
       ConnectionStrings__dbconnection: "Host=databasemaster;Port=5432;Database=socialnetworkdb;Username=postgres;Password=pgpwd4habr"
       ConnectionStrings__redisconnection: "redis:6379,allowAdmin=true,abortConnect=false"
+
+      RabbitMQ__HostName: "localhost"
+      RabbitMQ__UserName: "rmuser"
+      RabbitMQ__Password: "rmpassword"
+
     ports:    
       - "9000:8080"      
     depends_on:           
@@ -17,15 +22,32 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_started
+
 
   redis:
-    # ports:
-    #   - 6379:6379  
+    ports:
+      - 6379:6379  
     image: "redis:6.0.4"    
     command: --dir /data  --dbfilename dump.rdb --save 900 1 --save 300 10 --save 60 10000
     volumes:
       - 'd:\otusLessons\redisdata\:/data/'
 
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    volumes:
+      - d:\otusLessons\rabitmqData\:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
           
   databasemaster:
     image: mirror.gcr.io/postgres
@@ -34,8 +56,8 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "pgpwd4habr"
       PGDATA: "/var/lib/postgresql/data/pgdata"
-    # volumes:    
-    #   - d:\otusLessons\dbdatamaster\:/var/lib/postgresql/data
+    volumes:    
+       - d:\otusLessons\dbdatamaster\:/var/lib/postgresql/data
     ports:
       - "5500:5432"
     healthcheck:

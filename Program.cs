@@ -1,6 +1,7 @@
 using DalSoft.Hosting.BackgroundQueue.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -9,6 +10,7 @@ using SocialNetwork.Classes.Redis;
 using SocialNetwork.Classes.Services;
 using SocialNetwork.Extensions;
 using StackExchange.Redis;
+using System.Net.WebSockets;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -87,11 +89,20 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<FriendsService>();
 
+builder.Services.AddScoped<NotificationSenderService>();
 
 
 
-builder.Services.AddHostedService<CacheWorker>();
+builder.Services.AddHostedService<RabbitMQHostedService>();
+
+
+
+builder.Services.AddSingleton<WebSocketConnectionManager>();
+
+
 builder.Services.AddSingleton<CacheService>();
+
+
 
 
 builder.Services.AddSingleton(x =>
@@ -132,22 +143,18 @@ builder.Services.AddBackgroundQueue(onException: exception => { });
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    using (var dbContext = scope.ServiceProvider.GetService<ApplicationContext>())
-//    {
-//        //dbContext.Database.EnsureDeleted();
-//        dbContext.Database.EnsureCreated();
+using (var scope = app.Services.CreateScope())
+{
+    using (var dbContext = scope.ServiceProvider.GetService<ApplicationContext>())
+    {
+        //dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
 
-//        DataSeeder.SeedUsers(dbContext);
-//        DataSeeder.SeedFriends(dbContext);
-//        DataSeeder.SeedPosts(dbContext);
-//    }
-//}
-
-
-
-
+        DataSeeder.SeedUsers(dbContext);
+        DataSeeder.SeedFriends(dbContext);
+        DataSeeder.SeedPosts(dbContext);
+    }
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -164,6 +171,26 @@ app.UseSwaggerUI();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseWebSockets();
+
+
+
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.Map("/ws", async context =>
+//    {
+//        if (context.WebSockets.IsWebSocketRequest)
+//        {
+//            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+//            //await HandleWebSocketAsync(webSocket);
+//        }
+//        else
+//        {
+//            context.Response.StatusCode = 400;
+//        }
+//    });
+//});
 
 app.Run();
 

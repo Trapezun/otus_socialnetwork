@@ -1,4 +1,5 @@
 ﻿using DalSoft.Hosting.BackgroundQueue;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Newtonsoft.Json;
@@ -12,11 +13,15 @@ namespace SocialNetwork.Classes.Services
     public class PostService
     {
         private readonly ApplicationContext applicationContext;
+        
         private readonly CacheService cacheService;
 
-        public PostService(ApplicationContext applicationContext, CacheService cacheService)
+        public PostService(ApplicationContext applicationContext,        
+            CacheService cacheService
+            
+            )
         {
-            this.applicationContext = applicationContext;
+            this.applicationContext = applicationContext;            
             this.cacheService = cacheService;
         }
 
@@ -76,7 +81,7 @@ namespace SocialNetwork.Classes.Services
                 });
             }
             applicationContext.SaveChanges();
-            updateCache(myUserID);
+            
         }
 
         public void Update(string myUserID, int postID, string text)
@@ -87,7 +92,7 @@ namespace SocialNetwork.Classes.Services
                 post.Text = text;
             }
             applicationContext.SaveChanges();
-            updateCache(myUserID);
+            
         }
 
         public void Delete(string myUserID, int postID)
@@ -97,8 +102,7 @@ namespace SocialNetwork.Classes.Services
             {
                 applicationContext.Posts.Remove(post);
             }
-            applicationContext.SaveChanges();
-            updateCache(myUserID);
+            applicationContext.SaveChanges();            
         }
 
         public void SaveAllPostsToCache()
@@ -116,22 +120,12 @@ namespace SocialNetwork.Classes.Services
 
         public void SavePostsToCache(string userID)
         {
-            var me = applicationContext.Users.Include(x => x.FriendsOf).FirstOrDefault(x => x.Id == userID);
-            if (me != null)
-            {
-                //те кому я друг
-                var userIds = me.FriendsOf.Select(x => x.userID).ToList();
-                var users = applicationContext.Users.Where(x => userIds.Contains(x.Id)).ToList();
-                //идем по каждому и ищем его друзей и обновляем кеш.
-                foreach (var user in users)
-                {
-                    var friends = applicationContext.Friendships.Include(x => x.Friend).ThenInclude(x => x.Posts).Where(x => x.userID == user.Id).Select(x => x.Friend).ToList();
-                    var posts = getPostsByFriends(friends);
-
-                    cacheService.SavePostsToCache(user.Id, posts);
-                }
-            }
+            var friends = applicationContext.Friendships.Include(x => x.Friend).ThenInclude(x => x.Posts).Where(x => x.userID == userID).Select(x => x.Friend).ToList();
+            var posts = getPostsByFriends(friends);
+            cacheService.SavePostsToCache(userID, posts);
         }
+
+
 
         private List<PostModel> getPostsByFriends(List<UserDBModel> friends)
         {
@@ -160,11 +154,7 @@ namespace SocialNetwork.Classes.Services
         }
 
 
-
-        private void updateCache(string userID)
-        {
-            cacheService.AddUserToUpdate(userID);
-        }
+     
 
 
 

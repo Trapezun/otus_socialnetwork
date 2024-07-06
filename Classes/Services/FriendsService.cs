@@ -31,6 +31,18 @@ namespace SocialNetwork.Classes.Services
             }).ToList();              
         }
 
+        public List<string> FriendsOf(string myUserID)
+        {
+            var me = applicationContext.Users.Include(x => x.FriendsOf).FirstOrDefault(x => x.Id == myUserID);
+            if (me != null)
+            {
+                //те кому я друг
+                var userIds = me.FriendsOf.Select(x => x.userID).ToList();
+                return userIds;
+            }
+            return new List<string>();
+        }
+
         public void Set(string toWhomUserID, string friendID) {
 
             var friendship = new FriendshipDBModel
